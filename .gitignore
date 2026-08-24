@@ -1,0 +1,47 @@
+# NOTE: git does not support trailing comments on a pattern line -- anything
+# after the pattern becomes part of the pattern. Keep comments on their own line.
+
+# --- Python environment -----------------------------------------------------
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- Build output -----------------------------------------------------------
+# PyInstaller work plus the packaged app and installer. The installer alone is
+# 150 MB and GitHub rejects any single file over 100 MB, so built releases
+# belong on the Releases page, not in the tree.
+build/
+dist/
+
+# --- Bundled binaries (downloaded, not authored) ----------------------------
+# ffmpeg + ffprobe are ~280 MB of static builds. setup.bat fetches them via
+# tools/fetch_ffmpeg.py, so there is no reason to version them.
+bin/
+
+# --- Runtime data (per machine, some of it private) -------------------------
+# Whisper weights, several GB.
+models/
+# Finished media and transcripts.
+downloads/
+transcripts/
+# On-demand CUDA pack.
+runtime/
+# Browser profiles for the app window and the sign-in flow.
+window/
+login-profile/
+
+# Local settings, including machine-specific paths.
+config.json
+.backend-cache.json
+# LIVE SESSION COOKIES -- must never be committed.
+cookies.txt
+app.log
+
+# --- OS / editor ------------------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/
+*.swp

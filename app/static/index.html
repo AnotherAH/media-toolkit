@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Toolkit</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🎬</text></svg>">
+</head>
+<body>
+
+<!-- ====================================================== FIRST-RUN WIZARD -->
+<div class="overlay" id="wizard" hidden>
+  <div class="wiz">
+    <div class="steps" id="wizSteps"></div>
+    <div class="wiz-head"><h2 id="wizTitle"></h2><p id="wizSub"></p></div>
+    <div class="wiz-body">
+
+      <div class="wiz-step" data-step="0">
+        <p style="color:var(--fg-2);margin-top:0">This app does two jobs, both entirely on your own machine:</p>
+        <div class="opt-card" style="cursor:default">
+          <div><b>Download video and audio</b><span>From YouTube, Instagram, TikTok, X, Reddit and about 1,750 other sites — any quality, any format.</span></div>
+        </div>
+        <div class="opt-card" style="cursor:default">
+          <div><b>Turn videos into transcripts</b><span>Ready to paste into ChatGPT, Claude, or anything else. Usually instant; falls back to local Whisper when a video has no captions.</span></div>
+        </div>
+        <p style="color:var(--fg-3);font-size:12.5px">Nothing is uploaded anywhere. This takes about a minute to set up.</p>
+      </div>
+
+      <div class="wiz-step" data-step="1">
+        <div class="opt-card on" id="cardPortable">
+          <input type="radio" name="loc" value="portable" checked>
+          <div><b>Keep everything in the app folder</b><span>Self-contained — deleting the folder removes every trace. Good for a USB stick.</span></div>
+        </div>
+        <div class="opt-card" id="cardHome">
+          <input type="radio" name="loc" value="home">
+          <div><b>Use my Videos and Documents folders</b><span>Files land where you would normally look for them.</span></div>
+        </div>
+        <div class="opt-card" id="cardCustom">
+          <input type="radio" name="loc" value="custom">
+          <div><b>Choose my own folders</b><span>Pick exactly where downloads and transcripts go.</span></div>
+        </div>
+        <div id="wizPaths" style="margin-top:14px">
+          <label class="field"><span>Downloads</span>
+            <div class="pathrow"><input type="text" id="wizDl"><button class="btn ghost sm" data-pick="wizDl">Browse</button></div>
+          </label>
+          <label class="field"><span>Transcripts</span>
+            <div class="pathrow"><input type="text" id="wizTr"><button class="btn ghost sm" data-pick="wizTr">Browse</button></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="wiz-step" data-step="2">
+        <div class="grid">
+          <label class="field"><span>Default quality</span>
+            <select id="wizQuality">
+              <option value="best">Best available</option>
+              <option value="compatible">Best MP4 (H.264) — plays everywhere</option>
+              <option value="2160">Up to 4K</option>
+              <option value="1080" selected>Up to 1080p</option>
+              <option value="720">Up to 720p</option>
+            </select>
+          </label>
+          <label class="field"><span>Default audio format</span>
+            <select id="wizCodec">
+              <option value="mp3" selected>MP3 — universal</option>
+              <option value="m4a">M4A (AAC) — better quality per MB</option>
+              <option value="opus">Opus — best compression</option>
+              <option value="flac">FLAC — lossless</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="wizThumb" checked> Embed cover art and metadata</label>
+          <label class="check"><input type="checkbox" id="wizSponsor"> Cut YouTube sponsor segments</label>
+          <label class="check"><input type="checkbox" id="wizMtime" checked> Match file date to upload date</label>
+        </div>
+      </div>
+
+      <div class="wiz-step" data-step="3">
+        <div id="wizHw" class="note"></div>
+        <label class="field"><span>Whisper model (only used when a video has no captions)</span>
+          <select id="wizModel"></select>
+        </label>
+        <label class="check"><input type="checkbox" id="wizPreferSubs" checked>
+          Use a site's existing captions first — far faster, and free</label>
+      </div>
+
+      <div class="wiz-step" data-step="4">
+        <p style="color:var(--fg-2);margin-top:0">Only needed for content that requires you to be signed in — private Instagram posts, members-only videos, age-restricted uploads. You can skip this and set it up later.</p>
+        <div class="row" style="margin-bottom:12px">
+          <button class="btn ghost sm" id="wizDetect">Detect my browsers</button>
+          <button class="btn ghost sm" id="wizSignin">Sign in here instead</button>
+        </div>
+        <div id="wizCookieOut"></div>
+      </div>
+
+      <div class="wiz-step" data-step="5">
+        <div class="note" style="border-left-color:var(--ok)">You are set up. Here is what to try first:</div>
+        <div class="opt-card" style="cursor:default"><div><b>Paste a YouTube link on the Transcript tab</b><span>You will usually have the full text in about a second.</span></div></div>
+        <div class="opt-card" style="cursor:default"><div><b>Paste any link on the Download tab</b><span>Multiple links work too — one per line.</span></div></div>
+        <p style="color:var(--fg-3);font-size:12.5px">Everything here can be changed later under Settings.</p>
+      </div>
+
+    </div>
+    <div class="wiz-foot">
+      <button class="btn ghost sm" id="wizBack">Back</button>
+      <span class="spacer"></span>
+      <button class="btn ghost sm" id="wizSkip">Skip setup</button>
+      <button class="btn" id="wizNext">Continue</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    Media Toolkit
+  </div>
+  <div class="spacer"></div>
+  <div class="hw-badge" id="hwBadge" title="Open settings"><span class="dot"></span><span id="hwText">detecting…</span></div>
+</header>
+
+<nav>
+  <button data-tab="dl" class="on">Download</button>
+  <button data-tab="tr">Transcript</button>
+  <button data-tab="live">Live <span class="count live-dot" id="liveCount" style="display:none">0</span></button>
+  <button data-tab="q">Queue <span class="count" id="qCount" style="display:none">0</span></button>
+  <button data-tab="set">Settings</button>
+</nav>
+
+<main>
+
+<!-- ============================================================ DOWNLOAD -->
+<section class="page on" id="page-dl">
+  <div class="card">
+    <h2>Download video or audio</h2>
+    <p class="sub">Paste one link, or many links on separate lines. Works on YouTube, Instagram, TikTok, X, Reddit, Vimeo, Facebook and <a href="#" id="siteLink">1700+ other sites</a>.</p>
+    <div class="url-row">
+      <textarea id="dlUrl" rows="1" placeholder="https://www.youtube.com/watch?v=… &#10;https://www.instagram.com/reel/…"></textarea>
+      <button class="btn" id="dlGo">Download</button>
+    </div>
+    <div id="dlPreview" style="margin-top:14px"></div>
+    <div id="dlFormats"></div>
+  </div>
+
+  <div class="card">
+    <h2>Format</h2>
+    <div class="grid">
+      <label class="field"><span>What to save</span>
+        <select id="dlMode">
+          <option value="video">Video + audio</option>
+          <option value="audio">Audio only</option>
+        </select>
+      </label>
+      <label class="field" id="wrapQuality"><span>Quality</span>
+        <select id="dlQuality">
+          <option value="best">Best available</option>
+          <option value="compatible">Best MP4 (H.264, most compatible)</option>
+          <option value="2160">Up to 4K (2160p)</option>
+          <option value="1440">Up to 1440p</option>
+          <option value="1080" selected>Up to 1080p</option>
+          <option value="720">Up to 720p</option>
+          <option value="480">Up to 480p</option>
+          <option value="smallest">Smallest file</option>
+        </select>
+      </label>
+      <label class="field" id="wrapContainer"><span>Container</span>
+        <select id="dlContainer"><option value="mp4">MP4</option><option value="mkv">MKV</option><option value="webm">WebM</option></select>
+      </label>
+      <label class="field" id="wrapCodec" style="display:none"><span>Audio format</span>
+        <select id="dlCodec">
+          <option value="mp3">MP3</option><option value="m4a">M4A (AAC)</option>
+          <option value="opus">Opus</option><option value="flac">FLAC (lossless)</option>
+          <option value="wav">WAV</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="row" style="margin-top:4px">
+      <label class="check"><input type="checkbox" id="dlThumb" checked> Embed cover art</label>
+      <label class="check"><input type="checkbox" id="dlMeta" checked> Embed title/artist metadata</label>
+      <label class="check"><input type="checkbox" id="dlChapters" checked> Keep chapters</label>
+      <label class="check"><input type="checkbox" id="dlSponsor"> Cut sponsor segments (SponsorBlock)</label>
+      <button class="btn sm ghost" id="btnFormats">Show every available format</button>
+    </div>
+
+    <details class="adv" id="advSubs">
+      <summary>Subtitles, playlists and clipping</summary>
+      <div class="grid">
+        <label class="field"><span>Subtitles</span>
+          <select id="dlSubs">
+            <option value="none">Do not download</option>
+            <option value="manual">Official only</option>
+            <option value="auto">Include auto-generated</option>
+          </select>
+        </label>
+        <label class="field"><span>Subtitle languages</span><input type="text" id="dlSubLangs" value="en" placeholder="en,es,fr"></label>
+        <label class="field"><span>Clip sections</span><input type="text" id="dlSection" placeholder="1:30-4:15  or  intro,outro"></label>
+        <label class="field"><span>Playlist items</span><input type="text" id="dlItems" placeholder="1-10 or 3,7,9"></label>
+        <label class="field"><span>Playlist order</span>
+          <select id="dlOrder"><option value="">Normal</option><option value="reverse">Reverse</option><option value="random">Shuffle</option></select>
+        </label>
+        <label class="field"><span>Stop after N items</span><input type="number" id="dlMax" min="1" placeholder="no limit"></label>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="dlPlaylist"> Download whole playlist / channel</label>
+        <label class="check"><input type="checkbox" id="dlEmbedSubs" checked> Embed subtitles into the video</label>
+        <label class="check"><input type="checkbox" id="dlArchive" checked> Skip items already downloaded</label>
+        <label class="check"><input type="checkbox" id="dlStopKnown"> Stop as soon as a known item appears</label>
+        <label class="check"><input type="checkbox" id="dlConcat"> Join the playlist into one file</label>
+        <label class="check"><input type="checkbox" id="dlSplit"> Split the video by chapters</label>
+      </div>
+      <label class="field" style="margin-top:12px"><span>Remove chapters matching (comma-separated patterns)</span>
+        <input type="text" id="dlRmChapters" placeholder="intro, credits, outro"></label>
+    </details>
+
+    <details class="adv">
+      <summary>Only download items that match…</summary>
+      <div class="grid">
+        <label class="field"><span>Shortest (minutes)</span><input type="number" id="fMinDur" min="0" placeholder="any"></label>
+        <label class="field"><span>Longest (minutes)</span><input type="number" id="fMaxDur" min="0" placeholder="any"></label>
+        <label class="field"><span>Minimum views</span><input type="number" id="fMinViews" min="0" placeholder="any"></label>
+        <label class="field"><span>Title contains</span><input type="text" id="fTitle" placeholder="tutorial"></label>
+        <label class="field"><span>Uploaded after</span><input type="text" id="fAfter" placeholder="20240101"></label>
+        <label class="field"><span>Uploaded before</span><input type="text" id="fBefore" placeholder="20251231"></label>
+        <label class="field"><span>Max file size</span><input type="text" id="fMaxSize" placeholder="500M"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="fSkipLive" checked> Skip live streams</label>
+    </details>
+
+    <details class="adv">
+      <summary>Re-encode, live streams and extra files</summary>
+      <div class="grid">
+        <label class="field"><span>Re-encode video</span><select id="dlEncoder"><option value="">No — keep the original (fastest)</option></select></label>
+        <label class="field"><span>Re-encode quality</span>
+          <select id="dlRecodeQ"><option value="high">High</option><option value="balanced" selected>Balanced</option><option value="small">Small file</option></select>
+        </label>
+        <label class="field"><span>Convert thumbnails to</span>
+          <select id="dlThumbFmt"><option value="">Leave as-is</option><option value="jpg">JPG</option><option value="png">PNG</option></select>
+        </label>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="dlNormalize"> Normalise loudness to -14 LUFS</label>
+        <label class="check"><input type="checkbox" id="dlLiveStart"> Record live streams from the start</label>
+        <label class="check"><input type="checkbox" id="dlWait"> Wait for a scheduled premiere</label>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <label class="check"><input type="checkbox" id="dlInfoJson"> Save metadata .json</label>
+        <label class="check"><input type="checkbox" id="dlDesc"> Save description .txt</label>
+        <label class="check"><input type="checkbox" id="dlComments"> Save top
+          <input type="number" id="dlMaxComments" value="200" min="10" max="5000"
+                 style="width:74px;padding:3px 6px"> comments (great AI input)</label>
+        <label class="check"><input type="checkbox" id="dlThumbFile"> Save thumbnail image</label>
+        <label class="check"><input type="checkbox" id="dlLink"> Save a shortcut back to the page</label>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- =========================================================== TRANSCRIPT -->
+<section class="page" id="page-tr">
+  <div class="card">
+    <h2>Get a transcript</h2>
+    <p class="sub">If the site already has captions, you get them in about a second. Otherwise the audio is transcribed locally with Whisper — nothing is uploaded anywhere.</p>
+    <div class="url-row">
+      <textarea id="trUrl" rows="1" placeholder="https://www.youtube.com/watch?v=…"></textarea>
+      <button class="btn" id="trGo">Transcribe</button>
+    </div>
+    <div id="trPreview" style="margin-top:14px"></div>
+
+    <div class="drop" id="drop" style="margin-top:14px">
+      <input type="file" id="file" hidden accept="audio/*,video/*,.mp4,.mkv,.mp3,.m4a,.wav,.webm,.mov,.flac,.ogg,.opus">
+      or drop a local video / audio file here
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Transcription options</h2>
+    <div class="grid">
+      <label class="field"><span>Whisper model</span><select id="trModel"></select></label>
+      <label class="field"><span>Spoken language</span>
+        <select id="trLang">
+          <option value="">Detect automatically</option>
+          <option value="en">English</option><option value="fa">Persian / Farsi</option>
+          <option value="es">Spanish</option><option value="fr">French</option>
+          <option value="de">German</option><option value="ar">Arabic</option>
+          <option value="hi">Hindi</option><option value="tr">Turkish</option>
+          <option value="ru">Russian</option><option value="pt">Portuguese</option>
+          <option value="it">Italian</option><option value="ja">Japanese</option>
+          <option value="ko">Korean</option><option value="zh">Chinese</option>
+        </select>
+      </label>
+      <label class="field"><span>Caption language to prefer</span><input type="text" id="trLangs" value="en" placeholder="en,fa"></label>
+    </div>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="trForce"> Always use Whisper (ignore existing captions)</label>
+      <label class="check"><input type="checkbox" id="trTranslate"> Translate to English</label>
+      <label class="check"><input type="checkbox" id="trVad" checked> Skip silent parts (VAD)</label>
+      <label class="check"><input type="checkbox" id="trKeepAudio"> Keep the audio file too</label>
+    </div>
+    <details class="adv">
+      <summary>Accuracy tuning</summary>
+      <div class="grid">
+        <label class="field"><span>Beam size (higher = slower, more accurate)</span><input type="number" id="trBeam" value="5" min="1" max="10"></label>
+        <label class="field"><span>Names / jargon to expect</span><input type="text" id="trHotwords" placeholder="Kubernetes, Anthropic, Tehran"></label>
+      </div>
+    </details>
+  </div>
+
+  <div class="card" id="trResult" style="display:none">
+    <h2 id="trTitle">Transcript</h2>
+    <div class="stat-row" id="trStats"></div>
+    <div class="tabs" id="trFormats">
+      <button data-f="txt" class="on">Clean text</button>
+      <button data-f="md">Timestamped</button>
+      <button data-f="srt">SRT</button>
+      <button data-f="vtt">VTT</button>
+      <button data-f="json">JSON</button>
+    </div>
+    <div class="row" style="margin-bottom:11px">
+      <button class="btn sm" id="trCopy">Copy</button>
+      <button class="btn sm ghost" id="trCopyAI">Copy for AI chat</button>
+      <button class="btn sm ghost" id="trChunk">Split into chunks</button>
+      <button class="btn sm ghost" id="trSave">Open folder</button>
+      <span class="spacer"></span>
+      <span id="trChunkNav" style="display:none" class="row">
+        <button class="btn sm ghost" id="trPrev">‹</button>
+        <span id="trChunkLbl" style="color:var(--fg-2);font-size:12.5px"></span>
+        <button class="btn sm ghost" id="trNext">›</button>
+      </span>
+    </div>
+    <textarea id="tOut" spellcheck="false"></textarea>
+  </div>
+</section>
+
+
+<!-- ================================================================= LIVE -->
+<section class="page" id="page-live">
+  <div class="card">
+    <h2>Record a live stream</h2>
+    <p class="sub">Works on any site the app supports &mdash; YouTube, Twitch, Kick, TikTok, Instagram,
+      Facebook, news channels, radio. Video and audio are recorded together into one file,
+      copied as-is with no re-encoding, so there is no quality loss and almost no CPU use.</p>
+    <div class="url-row">
+      <textarea id="lvUrl" rows="1" placeholder="https://www.youtube.com/@SkyNews/live &#10;https://www.twitch.tv/…"></textarea>
+      <button class="btn" id="lvGo">Record</button>
+    </div>
+    <div id="lvPreview" style="margin-top:14px"></div>
+    <div class="note" style="margin-top:12px">You can stop a recording at any time from the Queue
+      and keep everything captured so far &mdash; the file is finalised properly, not left broken.</div>
+  </div>
+
+  <div class="card">
+    <h2>Recording options</h2>
+    <div class="grid">
+      <label class="field"><span>Quality</span>
+        <select id="lvQuality">
+          <option value="best" selected>Best available</option>
+          <option value="2160">Up to 4K</option>
+          <option value="1440">Up to 1440p</option>
+          <option value="1080">Up to 1080p</option>
+          <option value="720">Up to 720p</option>
+          <option value="480">Up to 480p</option>
+        </select>
+      </label>
+      <label class="field"><span>Save as</span>
+        <select id="lvContainer">
+          <option value="mp4" selected>MP4</option>
+          <option value="mkv">MKV</option>
+          <option value="ts">Keep raw .ts (never re-wrapped)</option>
+        </select>
+      </label>
+      <label class="field"><span>Stop after (minutes)</span>
+        <input type="number" id="lvMax" min="1" placeholder="no limit"></label>
+      <label class="field"><span>Split into files every (minutes)</span>
+        <input type="number" id="lvSplit" min="1" placeholder="one file"></label>
+      <label class="field"><span>Wait up to (minutes) for it to start</span>
+        <input type="number" id="lvWaitMin" min="1" value="180"></label>
+    </div>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="lvWait"> Wait for the stream to start</label>
+      <label class="check"><input type="checkbox" id="lvAudio"> Audio only</label>
+      <label class="check"><input type="checkbox" id="lvVod"> Allow recording something that is not live</label>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ QUEUE -->
+<section class="page" id="page-q">
+  <div class="row" style="margin-bottom:14px">
+    <h2 style="margin:0;font-size:15px">Queue</h2>
+    <span class="spacer"></span>
+    <button class="btn sm ghost" id="qOpenDl">Open downloads folder</button>
+    <button class="btn sm ghost" id="qOpenTr">Open transcripts folder</button>
+    <button class="btn sm danger" id="qClear">Clear finished</button>
+  </div>
+  <div id="qList"></div>
+</section>
+
+<!-- ============================================================= SETTINGS -->
+<section class="page" id="page-set">
+  <div class="card">
+    <h2>This machine</h2>
+    <p class="sub">Transcription backend is picked automatically and verified before use.</p>
+    <div id="hwInfo"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn sm ghost" id="btnRedetect">Re-detect backend</button>
+      <button class="btn sm ghost" id="btnUpdate">Update yt-dlp</button>
+      <button class="btn sm ghost" id="btnRerunSetup">Run first-time setup again</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Downloaded Whisper models</h2>
+    <p class="sub">Models are downloaded once, on first use. If a download is interrupted the app
+      detects the damage and re-fetches automatically &mdash; you can also force that here.</p>
+    <div id="modelList"></div>
+  </div>
+
+  <div class="card" id="packCard" style="display:none">
+    <h2>GPU acceleration</h2>
+    <p class="sub">Transcribing on the GPU is many times faster than on the CPU. The libraries
+      are a large one-time download, so they are fetched only if you want them.</p>
+    <div id="packBody"></div>
+    <div class="bar" id="packBar" style="display:none"><i style="width:0%"></i></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn sm" id="packInstall">Download GPU acceleration</button>
+      <button class="btn sm danger" id="packRemove" style="display:none">Remove it</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Signing in to sites</h2>
+    <p class="sub">Needed only for private, members-only or age-restricted content. There is no such thing as a fake session cookie — sites check it against a real login — but you never have to build a cookies.txt by hand.</p>
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn sm" id="ckDetect">Detect my browsers</button>
+      <button class="btn sm ghost" id="ckSignin">Sign in here</button>
+      <button class="btn sm ghost" id="ckHarvest" style="display:none">I have signed in</button>
+      <button class="btn sm danger" id="ckClear">Forget saved cookies</button>
+    </div>
+    <div id="ckOut"></div>
+    <details class="adv">
+      <summary>Paste cookies manually</summary>
+      <p class="sub">Accepts a whole cookies.txt, or a plain <code>name=value; name=value</code> cookie header copied from your browser's dev tools.</p>
+      <textarea id="ckPaste" rows="4" placeholder="# Netscape HTTP Cookie File&#10;…or…&#10;sessionid=abc123; csrftoken=def456"></textarea>
+      <div class="row" style="margin-top:9px"><button class="btn sm ghost" id="ckImport">Save these cookies</button></div>
+    </details>
+    <div class="grid" style="margin-top:14px">
+      <label class="field"><span>Use cookies from browser</span>
+        <select id="setCookies">
+          <option value="">Do not use cookies</option>
+          <option value="firefox">Firefox</option><option value="chrome">Chrome</option>
+          <option value="edge">Edge</option><option value="brave">Brave</option>
+          <option value="opera">Opera</option><option value="vivaldi">Vivaldi</option>
+          <option value="chromium">Chromium</option><option value="librewolf">LibreWolf</option>
+        </select>
+      </label>
+      <label class="field"><span>Browser profile (optional)</span><input type="text" id="setCookieProfile" placeholder="Default"></label>
+      <label class="field"><span>Cookies file</span><input type="text" id="setCookieFile" placeholder="C:\path\to\cookies.txt"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Folders and defaults</h2>
+    <div class="grid">
+      <label class="field"><span>Save downloads to</span>
+        <div class="pathrow"><input type="text" id="setDl"><button class="btn ghost sm" data-pick="setDl">Browse</button></div></label>
+      <label class="field"><span>Save transcripts to</span>
+        <div class="pathrow"><input type="text" id="setTr"><button class="btn ghost sm" data-pick="setTr">Browse</button></div></label>
+      <label class="field"><span>Default Whisper model</span><select id="setModel"></select></label>
+      <label class="field"><span>Transcription device</span>
+        <select id="setDevice"><option value="auto">Auto (recommended)</option><option value="cuda">GPU (NVIDIA)</option><option value="cpu">CPU</option></select>
+      </label>
+      <label class="field"><span>Precision</span>
+        <select id="setCompute">
+          <option value="auto">Auto (matches your GPU)</option>
+          <option value="float16">float16 — safest on RTX 50-series</option>
+          <option value="int8_float16">int8_float16 — fastest on RTX 20/30/40</option>
+          <option value="int8">int8 — lowest memory, and CPU</option>
+          <option value="float32">float32 — old GPUs / max compatibility</option>
+        </select>
+      </label>
+      <label class="field"><span>File name template</span><input type="text" id="setTmpl"></label>
+    </div>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="setPreferSubs" checked> Use existing captions before running Whisper</label>
+      <label class="check"><input type="checkbox" id="setRestrict"> ASCII-only filenames</label>
+      <label class="check"><input type="checkbox" id="setMtime" checked> Set file date from upload date</label>
+      <label class="check"><input type="checkbox" id="setTemp" checked> Stage downloads in a temp folder</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Network</h2>
+    <p class="sub">Useful when a site throttles you, blocks non-browser traffic, or is region-locked.</p>
+    <div class="grid">
+      <label class="field"><span>Parallel connections per download</span><input type="number" id="setFrag" min="1" max="16"></label>
+      <label class="field"><span>Speed limit (blank = unlimited)</span><input type="text" id="setRate" placeholder="5M"></label>
+      <label class="field"><span>Proxy</span><input type="text" id="setProxy" placeholder="socks5://127.0.0.1:1080"></label>
+      <label class="field"><span>Pretend to be a browser (TLS)</span><select id="setImpersonate"><option value="">Off</option></select></label>
+      <label class="field"><span>Pretend to be in country</span><input type="text" id="setGeo" placeholder="US" maxlength="2"></label>
+      <label class="field"><span>Pause between requests (seconds)</span><input type="number" id="setSleep" min="0" step="0.25" placeholder="0"></label>
+      <label class="field"><span>Faster downloader</span><select id="setDownloader"><option value="">Built-in</option><option value="aria2c">aria2c (if installed)</option></select></label>
+    </div>
+    <label class="check"><input type="checkbox" id="setIpv4"> Force IPv4</label>
+    <div class="row" style="margin-top:16px"><button class="btn" id="setSave">Save settings</button></div>
+  </div>
+
+  <div class="card">
+    <h2>Supported sites</h2>
+    <p class="sub"><span id="siteCount">…</span> extractors ship with yt-dlp. Search to check yours.</p>
+    <input type="text" id="siteSearch" placeholder="instagram, tiktok, vimeo…">
+    <div class="sites" id="siteList"></div>
+  </div>
+</section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+yt-dlp[default]
+faster-whisper
+fastapi
+uvicorn[standard]
+python-multipart
+
+# GPU acceleration (NVIDIA). Harmless to install without a GPU;
+# the app falls back to CPU automatically.
+nvidia-cublas-cu12
+nvidia-cudnn-cu12
