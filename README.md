@@ -119,7 +119,6 @@ MediaToolkit.exe --browser             open in your normal browser instead of th
 MediaToolkit.exe --server              run without a window; keeps going until stopped
 MediaToolkit.exe --diagnose MODEL      write a report on a speech model to diagnose.txt
 MediaToolkit.exe --diagnose MODEL --repair   ...and download that model again
-MediaToolkit.exe --version             print the version
 ```
 
 `--host` can make the server reachable from other devices on your network; it

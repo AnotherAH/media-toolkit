@@ -29,6 +29,8 @@ Work that is known and deliberately left for a later release.
       removed, instead of in the next day's clean-up.
 - [ ] Live recordings: when a stream's playlist stops advancing without ending,
       each 90-second stall starts a new part that repeats the last few seconds.
+- [ ] `--version` (and other console output) prints nothing from the installed
+      app, which is a windowed program; show it in a message box instead.
 - [ ] Pick the right graphics card on machines with more than one NVIDIA GPU.
 
 ## Release and legal
