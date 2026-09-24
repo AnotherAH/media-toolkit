@@ -58,6 +58,68 @@ split long recordings into parts, and survives short network drops.
   </tr>
 </table>
 
+## All features
+
+### Downloading
+- Works with **1,700+ sites** through yt-dlp: YouTube, Instagram, TikTok, X, Reddit, Vimeo, Facebook, Twitch and more
+- Paste one link or many at once; a live **preview** shows title, length, best quality and an estimated file size
+- **Video or audio only**: quality from 480p up to 4K, "Plays on any device" (H.264) mode, or the smallest file
+- Audio as **MP3, M4A, Opus, FLAC or WAV**; containers MP4, MKV or WebM
+- **Download only part** of a video (from/to times), or pick an **exact format** from the full format list
+- **Playlists and channels** right in the preview: all, first or latest N, or specific items, with filters for length, upload date, title, views and file size, reverse or shuffled order, and "join everything into one file"
+- **Quick update** for channels: skip videos you already have and stop at the first known one
+- **Subtitles** (official or automatic, any language), embedded or as files
+- **SponsorBlock**: cut out or just mark sponsor segments
+- **Chapters**: keep them, split into one file per chapter, or remove chapters by name
+- **Re-encode** with your graphics card (NVIDIA, Intel or AMD, only offered when it really works) or processor, and **even out the volume**
+- Extras: cover art and title/artist tags, description, top comments, thumbnail, a shortcut to the page, technical details
+- File name presets (title, channel, date) or your own pattern
+- **Sign-in for private or age-restricted videos**: use your browser's sign-in, sign in through a separate window, or paste cookies
+
+### Transcripts
+- Uses the video's **own captions first**, so most transcripts are ready in about a second
+- Otherwise transcribes **on your PC with Whisper**, on your NVIDIA graphics card or processor, with automatic fallback if one does not work
+- **Drop any local video or audio file** onto the window to transcribe it
+- **Language choice** with native names (Persian, Arabic, Chinese, Hindi and 20+ more), or **translate to English**
+- A clean **reader** with paragraphs or timestamps, word and token count
+- **Copy for AI chat** adds the title, channel and link; long transcripts can be **copied in parts** that fit one message each
+- Save as **text, notes with timestamps, SRT, VTT or JSON**
+- Recent transcripts stay one click away
+- Speech models from tiny (75 MB) to large (3 GB); the app recommends one for your hardware, checks downloads and repairs damaged ones
+
+### Live recording
+- Record **any live stream** yt-dlp can open: YouTube, Twitch, Kick, TikTok, radio and more
+- **Video and sound together**, copied as streamed: no quality loss and almost no CPU use
+- **Stop whenever you like** and keep everything recorded so far; the file is always playable
+- **Survives network drops** and reconnects on its own
+- **Waits for scheduled streams** to start, up to a time you choose
+- Stop automatically after N minutes, or start a new file every N minutes
+- Sound-only recording for radio and talk streams
+
+### The app
+- **Each tab shows its own progress and results**; the Queue keeps every job, even across restarts
+- **Errors in plain language with a fix button** (sign in, retry, repair ffmpeg) and technical details one click away
+- Try again, remove, clear with undo, play, open and show in folder on every job
+- **Remembers your choices** between launches; settings save themselves
+- **Light and dark themes** that follow Windows, keyboard shortcuts, full **right-to-left** support
+- **Installer or portable zip**; updates to site support (yt-dlp) from inside the app
+- Keeps working in the background if you close the window; opening it again returns to the running app
+
+## Why Media Toolkit
+
+| | Media Toolkit | Online downloader sites | yt-dlp on the command line | Typical paid downloaders |
+|---|---|---|---|---|
+| Sites supported | 1,700+ (yt-dlp) | a handful | 1,700+ | dozens to hundreds |
+| Transcripts for AI chats | built in, captions or local Whisper | no | no | rarely |
+| Live stream recording that can be stopped and kept | yes | no | partly (no clean stop and keep) | some |
+| Runs on your PC, nothing uploaded | yes | no, your links go to their servers | yes | yes |
+| Ads, accounts, tracking | none | usually ads and trackers | none | accounts, upsells, limits |
+| Easy to use | yes | yes | needs typing commands | yes |
+| Price and license | free, open source (MIT) | free with ads | free, open source | paid or limited free tier |
+
+In short: it gives you the full power of yt-dlp and ffmpeg without the command line, adds local
+speech-to-text that turns any video into text for an AI chat, and keeps everything on your own PC.
+
 ## Install
 
 1. Download **`MediaToolkit-Setup-1.2.0.exe`** from the
