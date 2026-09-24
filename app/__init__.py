@@ -6,4 +6,4 @@ the release workflow checks the git tag against it, and the API reports it.
 tests/test_packaging.py fails if any of those drift apart.
 """
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"

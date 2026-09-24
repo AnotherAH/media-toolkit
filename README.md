@@ -6,12 +6,12 @@
 
 <p align="center">
   Download videos, record live streams, and turn any video into text you can paste into an AI chat.<br>
-  Everything runs on your own Windows PC.
+  Everything runs on your own computer: Windows, macOS or Linux.
 </p>
 
 <p align="center">
   <a href="https://github.com/AnotherAH/media-toolkit/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/AnotherAH/media-toolkit?style=flat-square&color=2c6ae0"></a>
-  <img alt="Windows 10 and 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-2c6ae0?style=flat-square">
+  <img alt="Windows, macOS and Linux" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-2c6ae0?style=flat-square">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2c6ae0?style=flat-square"></a>
   <a href="https://github.com/AnotherAH/media-toolkit/actions/workflows/ci.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/AnotherAH/media-toolkit/ci.yml?style=flat-square&label=tests"></a>
 </p>
@@ -30,8 +30,8 @@ card.
 
 **Transcripts in seconds.** Paste a link and get clean text, ready for any AI
 chat. If the video has captions you have them in about a second; if not, the
-speech is transcribed on your PC with [Whisper](https://github.com/SYSTRAN/faster-whisper),
-using your NVIDIA graphics card when you have one. Drop a local video or
+speech is transcribed on your computer with [Whisper](https://github.com/SYSTRAN/faster-whisper),
+using an NVIDIA graphics card on Windows when you have one. Drop a local video or
 audio file to transcribe it too. Save as text, notes with timestamps,
 subtitles or JSON.
 
@@ -54,7 +54,7 @@ split long recordings into parts, and survives short network drops.
   </tr>
   <tr>
     <td align="center"><sub>Live recording with stop and save</sub></td>
-    <td align="center"><sub>Light and dark themes follow Windows</sub></td>
+    <td align="center"><sub>Light and dark themes follow your system</sub></td>
   </tr>
 </table>
 
@@ -78,7 +78,7 @@ split long recordings into parts, and survives short network drops.
 
 ### Transcripts
 - Uses the video's **own captions first**, so most transcripts are ready in about a second
-- Otherwise transcribes **on your PC with Whisper**, on your NVIDIA graphics card or processor, with automatic fallback if one does not work
+- Otherwise transcribes **on your computer with Whisper**, on an NVIDIA graphics card (Windows) or the processor, with automatic fallback if one does not work
 - **Drop any local video or audio file** onto the window to transcribe it
 - **Language choice** with native names (Persian, Arabic, Chinese, Hindi and 20+ more), or **translate to English**
 - A clean **reader** with paragraphs or timestamps, word and token count
@@ -101,8 +101,8 @@ split long recordings into parts, and survives short network drops.
 - **Errors in plain language with a fix button** (sign in, retry, repair ffmpeg) and technical details one click away
 - Try again, remove, clear with undo, play, open and show in folder on every job
 - **Remembers your choices** between launches; settings save themselves
-- **Light and dark themes** that follow Windows, keyboard shortcuts, full **right-to-left** support
-- **Installer or portable zip**; updates to site support (yt-dlp) from inside the app
+- **Light and dark themes** that follow your system, keyboard shortcuts, full **right-to-left** support
+- **Windows installer or portable zip, macOS disk image, Linux AppImage or tarball**; updates to site support (yt-dlp) from inside the app
 - Keeps working in the background if you close the window; opening it again returns to the running app
 
 ## Why Media Toolkit
@@ -112,28 +112,54 @@ split long recordings into parts, and survives short network drops.
 | Sites supported | 1,700+ (yt-dlp) | a handful | 1,700+ | dozens to hundreds |
 | Transcripts for AI chats | built in, captions or local Whisper | no | no | rarely |
 | Live stream recording that can be stopped and kept | yes | no | partly (no clean stop and keep) | some |
-| Runs on your PC, nothing uploaded | yes | no, your links go to their servers | yes | yes |
+| Runs on your computer, nothing uploaded | yes | no, your links go to their servers | yes | yes |
 | Ads, accounts, tracking | none | usually ads and trackers | none | accounts, upsells, limits |
 | Easy to use | yes | yes | needs typing commands | yes |
 | Price and license | free, open source (MIT) | free with ads | free, open source | paid or limited free tier |
 
 In short: it gives you the full power of yt-dlp and ffmpeg without the command line, adds local
-speech-to-text that turns any video into text for an AI chat, and keeps everything on your own PC.
+speech-to-text that turns any video into text for an AI chat, and keeps everything on your own computer.
 
 ## Install
 
-1. Download **`MediaToolkit-Setup-1.2.0.exe`** from the
-   [latest release](https://github.com/AnotherAH/media-toolkit/releases/latest).
-2. Run it. It installs for your user only, so there is no administrator
-   prompt, and adds Start menu and desktop shortcuts.
-3. The installer is not code-signed yet, so Windows SmartScreen may say it
-   "protected your PC". Choose **More info › Run anyway**. You can compare the
-   file with `SHA256SUMS.txt` from the same release first:
-   `certutil -hashfile MediaToolkit-Setup-1.2.0.exe SHA256`
+Get the file for your system from the
+[latest release](https://github.com/AnotherAH/media-toolkit/releases/latest).
+None of the downloads are code-signed yet, so the first launch needs one extra
+click; `SHA256SUMS.txt` in the release lets you check the file first.
 
-Prefer not to install? Download the **portable zip**, unpack it anywhere
-(a USB stick works) and run `MediaToolkit.exe`. It keeps its settings and
-models in a `data` folder next to it.
+### Windows 10 and 11
+
+1. Run **`MediaToolkit-Setup-<version>.exe`**. It installs for your user only,
+   so there is no administrator prompt, and adds Start menu and desktop
+   shortcuts.
+2. If SmartScreen says it "protected your PC", choose **More info › Run anyway**.
+
+Prefer not to install? The **portable zip** runs from any folder (a USB stick
+works) and keeps its settings and models in a `data` folder next to it.
+
+### macOS (Apple silicon, macOS 12 or newer)
+
+1. Open **`MediaToolkit-<version>-macos-arm64.dmg`** and drag **Media Toolkit**
+   into Applications.
+2. The first time, **right-click the app › Open › Open** (macOS blocks apps
+   from unidentified developers on a normal double-click). If macOS still
+   refuses, run `xattr -dr com.apple.quarantine "/Applications/Media Toolkit.app"`
+   in Terminal.
+
+For the app window, Media Toolkit uses Chrome, Edge or Brave if you have one,
+and otherwise opens in your default browser.
+
+### Linux (x86-64)
+
+- **AppImage:** `chmod +x MediaToolkit-<version>-x86_64.AppImage`, then run it.
+  Some distributions need `libfuse2` for AppImages
+  (`sudo apt install libfuse2` on Ubuntu 22.04 and newer).
+- **Tarball:** unpack `MediaToolkit-<version>-linux-x86_64.tar.gz` anywhere and run
+  `MediaToolkit` inside it.
+
+The folder picker uses `zenity` or `kdialog`, which most desktops already have.
+
+### What gets downloaded later
 
 Everything the app needs is included: Python, yt-dlp and ffmpeg. Two things
 are downloaded later, only if you want them:
@@ -141,10 +167,13 @@ are downloaded later, only if you want them:
 | Download | Size | When |
 |---|---|---|
 | Speech model | 75 MB to 3 GB | The first time a video without captions is transcribed |
-| GPU support (NVIDIA cuBLAS) | 528 MB | Offered in Settings on PCs with an NVIDIA graphics card |
+| GPU support (NVIDIA cuBLAS) | 528 MB | Windows only: offered in Settings on PCs with an NVIDIA graphics card |
 
-Upgrading keeps your settings, models and files. The uninstaller asks before
-removing the app's data folder, and never deletes your downloads.
+On macOS and Linux, transcription runs on the processor. Videos that have
+captions are instant everywhere.
+
+Upgrading keeps your settings, models and files. The Windows uninstaller asks
+before removing the app's data folder, and never deletes your downloads.
 
 ## First steps
 
@@ -168,7 +197,7 @@ There is no account, no tracking and no telemetry. The app talks only to:
 - PyPI, to download GPU support or a yt-dlp update when you ask for it;
 - GitHub, when you press Check for updates.
 
-Your files, transcripts and sign-in cookies stay on your PC. The app's
+Your files, transcripts and sign-in cookies stay on your computer. The app's
 window talks to a small server on `127.0.0.1` that refuses requests from
 websites, other computers and anything without the per-launch key.
 
@@ -187,12 +216,22 @@ MediaToolkit.exe --diagnose MODEL --repair   ...and download that model again
 then prints an address with an access key and requires it on every request.
 Only use it on a network you trust.
 
-The app keeps its log in `%LOCALAPPDATA%\Media Toolkit\app.log`
-(Settings › About › Open log file).
+On macOS the program is `/Applications/Media Toolkit.app/Contents/MacOS/MediaToolkit`,
+on Linux `MediaToolkit` in the unpacked folder (or the AppImage itself).
+
+The app keeps its settings, models and log (Settings › About › Open log file) in:
+
+| System | Folder |
+|---|---|
+| Windows | `%LOCALAPPDATA%\Media Toolkit` |
+| macOS | `~/Library/Application Support/Media Toolkit` |
+| Linux | `~/.local/share/media-toolkit` |
 
 ## Building from source
 
-Needs Windows 10/11 and Python 3.11 or newer (3.13 recommended).
+Needs Python 3.11 or newer (3.13 recommended).
+
+**Windows:**
 
 ```bat
 git clone https://github.com/AnotherAH/media-toolkit.git
@@ -202,16 +241,26 @@ Start.bat
 ```
 
 `setup.bat` creates a private environment in `.venv`, installs the
-dependencies and downloads ffmpeg into `bin\`. To build the installer and the
-portable zip you also need [Inno Setup 6](https://jrsoftware.org/isinfo.php)
-(`winget install JRSoftware.InnoSetup`):
+dependencies and downloads ffmpeg into `bin\`.
 
-```bat
-.venv\Scripts\python.exe -m pip install -r requirements-build.txt -c requirements-lock.txt
-.venv\Scripts\python.exe tools\build.py
+**macOS and Linux:**
+
+```sh
+git clone https://github.com/AnotherAH/media-toolkit.git
+cd media-toolkit
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python tools/fetch_ffmpeg.py
+.venv/bin/python run.py
 ```
 
-The results land in `dist\`. Pushing a `v<version>` tag builds the same files
+**Building the release files:** install the build tools with
+`pip install -r requirements-build.txt`, then run `tools\build.py` on Windows
+(installer and portable zip; needs [Inno Setup 6](https://jrsoftware.org/isinfo.php),
+`winget install JRSoftware.InnoSetup`) or `tools/build_unix.py` on macOS (a `.dmg`)
+and Linux (a tarball, plus an AppImage when `appimagetool` is installed).
+
+The results land in `dist/`. Pushing a `v<version>` tag builds all of them
 on GitHub Actions into a draft release. See [CONTRIBUTING.md](CONTRIBUTING.md)
 for tests and guidelines.
 

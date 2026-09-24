@@ -3,6 +3,19 @@
 All notable changes to Media Toolkit are listed here. Versions follow
 [semantic versioning](https://semver.org/).
 
+## [1.3.0] - 2026-09-24
+
+### New
+
+- **macOS and Linux versions.** Media Toolkit now comes as a disk image for
+  Macs with Apple silicon (macOS 12 or newer) and as an AppImage and a
+  tarball for 64-bit Linux, next to the Windows installer and portable zip.
+  It is the same app on all three; transcription on macOS and Linux runs on
+  the processor (GPU support is Windows only for now).
+- Native folder and file pickers on macOS and Linux, and the usual data
+  folders there (`~/Library/Application Support/Media Toolkit`,
+  `~/.local/share/media-toolkit`).
+
 ## [1.2.0] - 2026-09-24
 
 A large update: a redesigned interface, a security overhaul, and fixes for
@@ -118,5 +131,6 @@ First release.
   your own PC, in five formats.
 - Windows installer with an optional GPU pack for fast transcription.
 
+[1.3.0]: https://github.com/AnotherAH/media-toolkit/releases/tag/v1.3.0
 [1.2.0]: https://github.com/AnotherAH/media-toolkit/releases/tag/v1.2.0
 [1.1.1]: https://github.com/AnotherAH/media-toolkit/releases/tag/v1.1.1
