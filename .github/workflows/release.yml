@@ -1,12 +1,16 @@
-# Pushing a tag like v1.2.0 builds the Windows release and puts it on a DRAFT
-# GitHub release: installer, portable zip and SHA256SUMS.txt, with the notes
-# taken from the matching CHANGELOG.md section. A person reviews the draft and
-# publishes it; nothing here publishes on its own.
+# Pushing a tag like v1.3.0 builds Media Toolkit for Windows, Linux and macOS
+# and puts everything on a DRAFT GitHub release: the Windows installer and
+# portable zip, the Linux AppImage and tarball, the macOS disk image, and one
+# SHA256SUMS.txt, with the notes taken from the matching CHANGELOG.md
+# section. A person reviews the draft and publishes it; nothing here
+# publishes on its own. Run it by hand (workflow_dispatch) to build without
+# releasing.
 name: Release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -16,11 +20,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  windows:
     runs-on: windows-latest
     timeout-minutes: 90
-    env:
-      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
 
@@ -35,17 +37,13 @@ jobs:
             requirements-lock.txt
 
       - name: Check the tag matches the app version
-        id: version
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           $version = python tools/build.py --print-version
           if ("v$version" -ne $env:GITHUB_REF_NAME) {
             Write-Error "Tag $env:GITHUB_REF_NAME does not match __version__ = $version in app/__init__.py"
             exit 1
           }
-          "version=$version" >> $env:GITHUB_OUTPUT
-
-      - name: Release notes from CHANGELOG.md
-        run: python tools/release_notes.py ${{ steps.version.outputs.version }} release-notes.md
 
       - name: Install dependencies
         run: |
@@ -68,29 +66,117 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: media-toolkit-${{ steps.version.outputs.version }}
+          name: windows
           path: |
             dist/MediaToolkit-Setup-*.exe
             dist/MediaToolkit-*-portable.zip
-            dist/SHA256SUMS.txt
+          retention-days: 14
+
+  linux:
+    # The oldest supported runner, so the build runs on older glibc too.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-build.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt -r requirements-build.txt
+
+      - name: Get appimagetool
+        run: |
+          curl -fsSL -o appimagetool https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool
+          echo "APPIMAGETOOL=$PWD/appimagetool" >> "$GITHUB_ENV"
+
+      - name: Build AppImage and tarball
+        run: python tools/build_unix.py
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux
+          path: |
+            dist/MediaToolkit-*.AppImage
+            dist/MediaToolkit-*-linux-*.tar.gz
+          retention-days: 14
+
+  macos:
+    # Apple silicon. Intel Macs are not built.
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-build.txt
+
+      - name: Install dependencies
+        # Pillow only turns the PNG icon into an .icns at build time; the
+        # app itself does not use it.
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt -r requirements-build.txt pillow
+
+      - name: Build the disk image
+        run: python tools/build_unix.py
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: macos
+          path: dist/MediaToolkit-*.dmg
+          retention-days: 14
+
+  release:
+    needs: [windows, linux, macos]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: out
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: all-platforms
+          path: out/*
           retention-days: 14
 
       - name: Create or update the draft release
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          $version = "${{ steps.version.outputs.version }}"
-          $tag = $env:GITHUB_REF_NAME
-          $title = "Media Toolkit $version"
-          $files = @("dist/MediaToolkit-Setup-$version.exe",
-                     "dist/MediaToolkit-$version-portable.zip",
-                     "dist/SHA256SUMS.txt")
-          foreach ($f in $files) { if (-not (Test-Path $f)) { Write-Error "missing $f"; exit 1 } }
-          $draft = gh release view $tag --json isDraft --jq .isDraft 2>$null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create $tag @files --draft --verify-tag --title $title --notes-file release-notes.md
-          } elseif ($draft -eq "true") {
-            gh release edit $tag --title $title --notes-file release-notes.md
-            gh release upload $tag @files --clobber
-          } else {
-            Write-Error "Release $tag is already published. Bump the version and tag again."
+          version="${GITHUB_REF_NAME#v}"
+          python3 tools/release_notes.py "$version" release-notes.md
+          if ! gh release view "$GITHUB_REF_NAME" --json isDraft >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" out/* --draft --verify-tag \
+              --title "Media Toolkit $version" --notes-file release-notes.md
+          elif [ "$(gh release view "$GITHUB_REF_NAME" --json isDraft --jq .isDraft)" = "true" ]; then
+            gh release edit "$GITHUB_REF_NAME" --title "Media Toolkit $version" --notes-file release-notes.md
+            gh release upload "$GITHUB_REF_NAME" out/* --clobber
+          else
+            echo "Release $GITHUB_REF_NAME is already published. Bump the version and tag again." >&2
             exit 1
-          }
+          fi

@@ -101,6 +101,20 @@ FFMPEG_PIN = {
                        "a9fcfceca69aa7e321ab9359b5031d6548f8712c53979233fff2a3abf316f174", 98799300],
     },
 }
+# macOS (Apple silicon): yt-dlp publishes no macOS build, so the Mac app
+# ships Martin Riedl's static GPL release build, whose build scripts are
+# public. Two zips, one binary each; tools/fetch_ffmpeg.py reads this literal.
+FFMPEG_MAC_PIN = {
+    "version": "9.0.2",
+    "license": "GPL-3.0-or-later",
+    "base_url": "https://ffmpeg.martin-riedl.de/download/macos/arm64/1789931890_9.0.2/",
+    "source": "https://ffmpeg.org/releases/ffmpeg-9.0.2.tar.xz",
+    "builds_repo": "https://git.martin-riedl.de/ffmpeg/build-script",
+    "assets": {
+        "ffmpeg": ["ffmpeg.zip", "c8ed4c4e6978a03c485edbfe4e0a5dc2380f8a30bba5150531b31b094492d924", 28395699],
+        "ffprobe": ["ffprobe.zip", "fcbe839537485eaee7a7a8bc5cbc0f90d53617e80943e8a5b2e31cb851197ea6", 28317701],
+    },
+}
 FFMPEG_EXES = ("ffmpeg.exe", "ffprobe.exe")
 FFMPEG_LICENSE_NAME = "FFMPEG-LICENSE.txt"
 FFMPEG_VERSION_NAME = "FFMPEG-VERSION.txt"

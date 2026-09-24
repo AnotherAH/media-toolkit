@@ -38,7 +38,10 @@ import sys
 from pathlib import Path
 
 from PyInstaller.utils.hooks import collect_submodules, collect_dynamic_libs, collect_data_files
-from PyInstaller.utils.win32 import versioninfo as vi
+WINDOWS = sys.platform == "win32"
+MACOS = sys.platform == "darwin"
+if WINDOWS:
+    from PyInstaller.utils.win32 import versioninfo as vi
 
 ROOT = Path(SPECPATH)
 sys.path.insert(0, str(ROOT / "tools"))
@@ -47,7 +50,7 @@ VERSION = re.search(r'__version__\s*=\s*"([^"]+)"',
                     (ROOT / "app" / "__init__.py").read_text("utf-8")).group(1)
 
 FFMPEG_DIR = Path(os.environ.get("MT_FFMPEG_DIR") or ROOT / "bin")
-FFMPEG_FILES = ("ffmpeg.exe", "ffprobe.exe")
+FFMPEG_FILES = ("ffmpeg.exe", "ffprobe.exe") if WINDOWS else ("ffmpeg", "ffprobe")
 FFMPEG_EXTRAS = ("FFMPEG-LICENSE.txt", "FFMPEG-VERSION.txt")
 missing = [n for n in FFMPEG_FILES + FFMPEG_EXTRAS if not (FFMPEG_DIR / n).exists()]
 if missing:
@@ -56,7 +59,7 @@ if missing:
 
 # Kept out of the process for licence reasons (see the docstring).
 GPL_EXCLUDES = ["av", "mutagen"]
-NVIDIA_DLL = re.compile(r"(^|[\\/])(cudnn|cublas|cudart|nvrtc)[^\\/]*\.dll$", re.I)
+NVIDIA_DLL = re.compile(r"(^|[\\/])(lib)?(cudnn|cublas|cudart|nvrtc)[^\\/]*\.(dll|so[.\d]*|dylib)$", re.I)
 
 
 # ------------------------------------------------------------ version resource
@@ -207,8 +210,8 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version=version_file(),
-    icon=str(ROOT / "assets" / "icon.ico") if (ROOT / "assets" / "icon.ico").exists() else None,
+    version=version_file() if WINDOWS else None,
+    icon=str(ROOT / "assets" / ("icon.ico" if WINDOWS else "icon.png")),
 )
 
 coll = COLLECT(
@@ -224,6 +227,26 @@ coll = COLLECT(
 # ------------------------------------------------ files that sit beside the exe
 
 APP_DIR = Path(DISTPATH) / "MediaToolkit"
+if MACOS:
+    # A real .app: the executable, bin/ and the licence files live in
+    # Contents/MacOS, which is what the app treats as its own folder.
+    bundle = BUNDLE(
+        coll,
+        name="Media Toolkit.app",
+        icon=str(ROOT / "assets" / "icon.png"),
+        bundle_identifier="io.github.anotherah.mediatoolkit",
+        version=VERSION,
+        info_plist={
+            "CFBundleName": "Media Toolkit",
+            "CFBundleDisplayName": "Media Toolkit",
+            "CFBundleShortVersionString": VERSION,
+            "CFBundleVersion": VERSION,
+            "LSMinimumSystemVersion": "12.0",
+            "NSHighResolutionCapable": True,
+            "NSHumanReadableCopyright": "Copyright (c) 2026 AnotherAH. MIT License.",
+        },
+    )
+    APP_DIR = Path(DISTPATH) / "Media Toolkit.app" / "Contents" / "MacOS"
 (APP_DIR / "bin").mkdir(exist_ok=True)
 for name in FFMPEG_FILES + FFMPEG_EXTRAS:
     shutil.copy2(FFMPEG_DIR / name, APP_DIR / "bin" / name)

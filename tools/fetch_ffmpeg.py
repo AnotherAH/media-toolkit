@@ -39,14 +39,41 @@ LICENSE_NAME = "FFMPEG-LICENSE.txt"
 VERSION_NAME = "FFMPEG-VERSION.txt"
 
 
-def pin() -> dict:
-    """FFMPEG_PIN from app/assets.py, evaluated as a literal."""
+def pin(name: str = "FFMPEG_PIN") -> dict:
+    """A pin literal from app/assets.py (FFMPEG_PIN or FFMPEG_MAC_PIN)."""
     tree = ast.parse((ROOT / "app" / "assets.py").read_text("utf-8"))
     for node in tree.body:
         if isinstance(node, ast.Assign) and any(
-                isinstance(t, ast.Name) and t.id == "FFMPEG_PIN" for t in node.targets):
+                isinstance(t, ast.Name) and t.id == name for t in node.targets):
             return ast.literal_eval(node.value)
-    raise SystemExit("app/assets.py has no FFMPEG_PIN")
+    raise SystemExit(f"app/assets.py has no {name}")
+
+
+def fetch_mac(dest: Path, force: bool) -> int:
+    """macOS on Apple silicon: two pinned zips from FFMPEG_MAC_PIN, plus the
+    GPL text kept in tools/licenses (the zips carry only the binaries)."""
+    p = pin("FFMPEG_MAC_PIN")
+    if not force and already_have(dest, p["version"]):
+        print(f"ffmpeg: {p['version']} already in {dest}")
+        return 0
+    dest.mkdir(parents=True, exist_ok=True)
+    lines = [f"FFmpeg {p['version']} ({p['license']})"]
+    with tempfile.TemporaryDirectory(prefix="mt-ffmpeg-") as tmp:
+        for exe, (name, sha, size) in p["assets"].items():
+            archive = Path(tmp) / name
+            print(f"ffmpeg: downloading {exe} ({size / 1048576:.0f} MB)...")
+            download(p["base_url"] + name, archive, sha, size)
+            with zipfile.ZipFile(archive) as zf:
+                member = next(m for m in zf.namelist() if Path(m).name == exe)
+                with zf.open(member) as src, (dest / exe).open("wb") as dst:
+                    shutil.copyfileobj(src, dst, 1 << 20)
+            os.chmod(dest / exe, 0o755)
+            lines += [f"Build: {name}", f"Download: {p['base_url']}{name}", f"SHA-256: {sha}"]
+    lines += [f"FFmpeg source: {p['source']}", f"Build scripts: {p['builds_repo']}"]
+    (dest / VERSION_NAME).write_text("\n".join(lines) + "\n", "utf-8")
+    shutil.copy2(ROOT / "tools" / "licenses" / "ffmpeg-gpl-3.0.txt", dest / LICENSE_NAME)
+    print(f"ffmpeg: installed {p['version']} into {dest}")
+    return 0
 
 
 def platform_key() -> str | None:
@@ -166,6 +193,8 @@ def main(argv: list[str] | None = None) -> int:
                          "whose licence notes describe the pinned build only)")
     args = ap.parse_args(argv)
     dest: Path = args.dest.resolve()
+    if platform.system() == "Darwin" and platform.machine().lower() in ("arm64", "aarch64"):
+        return fetch_mac(dest, args.force)
     p = pin()
 
     key = platform_key()

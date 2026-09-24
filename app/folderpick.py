@@ -14,8 +14,10 @@ variable, never into the script text.
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 _PRELUDE = r"""
 [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding $false
@@ -83,24 +85,63 @@ def _run_ps(script: str, start: str, extra_env: dict | None = None) -> str | Non
     return None
 
 
-def choose(start: str = "") -> str:
-    """Return the chosen directory, or "" if the user cancelled."""
-    start = start or os.path.expanduser("~")
-    if os.name == "nt":
-        picked = _run_ps(_FOLDER_PS, start) or ""
-        return picked if picked and os.path.isdir(picked) else ""
+def _run_posix(cmd: list[str]) -> str | None:
+    """A native dialog on macOS or Linux. None when the tool is missing,
+    "" when the user cancelled."""
+    if not shutil.which(cmd[0]):
+        return None
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, stdin=subprocess.DEVNULL,
+                              timeout=600, encoding="utf-8", errors="replace")
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return proc.stdout.strip() if proc.returncode == 0 else ""
 
+
+def _as_quote(text: str) -> str:
+    return text.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _posix_pick(start: str, folder: bool) -> str:
+    """osascript on macOS, zenity or kdialog on Linux, tkinter as a last
+    resort (not in the frozen build)."""
+    if sys.platform == "darwin":
+        what = "folder" if folder else "file"
+        script = (f'POSIX path of (choose {what} with prompt "Choose a {what}" '
+                  f'default location (POSIX file "{_as_quote(start)}"))')
+        picked = _run_posix(["osascript", "-e", script])
+        if picked is not None:
+            return picked.rstrip("/") if folder and len(picked) > 1 else picked
+    else:
+        zen = ["zenity", "--file-selection", f"--filename={start.rstrip('/')}/"]
+        picked = _run_posix(zen + (["--directory"] if folder else []))
+        if picked is None:
+            picked = _run_posix(["kdialog", "--getexistingdirectory" if folder
+                                 else "--getopenfilename", start])
+        if picked is not None:
+            return picked
     try:
         import tkinter as tk
         from tkinter import filedialog
         root = tk.Tk()
         root.withdraw()
         root.attributes("-topmost", True)
-        picked = filedialog.askdirectory(initialdir=start, title="Choose a folder")
+        ask = filedialog.askdirectory if folder else filedialog.askopenfilename
+        picked = ask(initialdir=start, title="Choose a folder" if folder else "Choose a file")
         root.destroy()
         return picked or ""
     except Exception:
         return ""
+
+
+def choose(start: str = "") -> str:
+    """Return the chosen directory, or "" if the user cancelled."""
+    start = start or os.path.expanduser("~")
+    if os.name == "nt":
+        picked = _run_ps(_FOLDER_PS, start) or ""
+        return picked if picked and os.path.isdir(picked) else ""
+    picked = _posix_pick(start if os.path.isdir(start) else os.path.expanduser("~"), True)
+    return picked if picked and os.path.isdir(picked) else ""
 
 
 def choose_file(start: str = "", kind: str = "") -> str:
@@ -109,17 +150,8 @@ def choose_file(start: str = "", kind: str = "") -> str:
     if os.name == "nt":
         picked = _run_ps(_FILE_PS, start, {"MT_PICK_FILTER": _FILTERS.get(kind, _FILTERS[""])})
         return picked if picked and os.path.isfile(picked) else ""
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-        root = tk.Tk()
-        root.withdraw()
-        root.attributes("-topmost", True)
-        picked = filedialog.askopenfilename(initialdir=start, title="Choose a file")
-        root.destroy()
-        return picked or ""
-    except Exception:
-        return ""
+    picked = _posix_pick(start if os.path.isdir(start) else os.path.expanduser("~"), False)
+    return picked if picked and os.path.isfile(picked) else ""
 
 
 # Known folder ids (KNOWNFOLDERID) for the places people expect files.
@@ -136,8 +168,18 @@ def known_folder(name: str) -> str:
     folder redirection move them away from %USERPROFILE%, and a folder
     created at the old spot is one the user never finds in Explorer.
     Returns "" when unknown (not Windows, or the lookup failed)."""
+    if sys.platform == "darwin":
+        return str(Path.home() / {"videos": "Movies", "documents": "Documents",
+                                  "downloads": "Downloads", "music": "Music"}.get(name, ""))
+    if os.name != "nt":
+        # XDG user dirs: localised and user-configurable on Linux desktops.
+        xdg = {"videos": "VIDEOS", "documents": "DOCUMENTS", "downloads": "DOWNLOAD",
+               "music": "MUSIC"}.get(name)
+        found = _run_posix(["xdg-user-dir", xdg]) if xdg else None
+        home = str(Path.home())
+        return found if found and found.rstrip("/") != home.rstrip("/") else ""
     guid = _KNOWN.get(name)
-    if os.name != "nt" or not guid:
+    if not guid:
         return ""
     try:
         import ctypes

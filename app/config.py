@@ -29,8 +29,10 @@ if FROZEN:
     ROOT = Path(sys.executable).resolve().parent
     if os.name == "nt":
         DATA_ROOT = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "Media Toolkit"
+    elif sys.platform == "darwin":
+        DATA_ROOT = Path.home() / "Library/Application Support/Media Toolkit"
     else:
-        DATA_ROOT = Path.home() / ".local/share/media-toolkit"
+        DATA_ROOT = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")             / "media-toolkit"
     # Portable mode: a portable.txt beside the exe keeps every byte of user
     # data on the same stick, so the app leaves nothing behind on the PC. A
     # copy unpacked somewhere read-only silently keeps the normal location.

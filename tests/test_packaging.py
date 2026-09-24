@@ -440,4 +440,4 @@ def test_workflows_use_only_official_actions(name):
                 uses.append(st["uses"])
     assert uses
     for u in uses:
-        assert re.fullmatch(r"actions/(checkout|setup-python|upload-artifact)@v\d+", u), u
+        assert re.fullmatch(r"actions/(checkout|setup-python|upload-artifact|download-artifact)@v\d+", u), u

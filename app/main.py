@@ -467,7 +467,9 @@ def check_folder(path: str) -> str | None:
     if not raw:
         return "Choose a folder."
     if not os.path.isabs(raw):
-        return "Use a full folder path, for example C:\\Users\\you\\Videos."
+        return ("Use a full folder path, for example "
+                + ("C:\\Users\\you\\Videos." if os.name == "nt" else "/Users/you/Movies."
+                   if sys.platform == "darwin" else "/home/you/Videos."))
     folder = Path(raw)
     try:
         folder.mkdir(parents=True, exist_ok=True)
