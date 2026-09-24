@@ -1,0 +1,10 @@
+# Optional: NVIDIA cuBLAS through pip, for source checkouts that prefer it to
+# the in-app download (Settings > Transcription). Same pinned version as the
+# app's GPU pack (app/assets.py CUBLAS_WHEEL). cuDNN is not needed: Whisper's
+# engine (CTranslate2) does not use it.
+#
+# This is NVIDIA's proprietary software, licensed under the NVIDIA Software
+# License Agreement: https://docs.nvidia.com/cuda/eula/index.html
+#   python -m pip install -r requirements-gpu.txt
+
+nvidia-cublas-cu12==12.9.2.10

@@ -1,0 +1,4 @@
+# Building the Windows release (tools/build.py). Also needs Inno Setup 6.
+#   python -m pip install -r requirements.txt -r requirements-build.txt -c requirements-lock.txt
+pyinstaller==6.22.2
+pyinstaller-hooks-contrib==2026.6

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A site stopped working
+    url: https://github.com/yt-dlp/yt-dlp/issues
+    about: Site support comes from yt-dlp. Update it in Settings › About first; if it still fails, check yt-dlp's issues.
+  - name: Security problem
+    url: https://github.com/AnotherAH/media-toolkit/security/advisories/new
+    about: Please report vulnerabilities privately.

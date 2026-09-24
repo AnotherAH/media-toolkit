@@ -1,0 +1,51 @@
+# Exact versions a release is built and tested with. Used as a constraints file
+# (pip install ... -c requirements-lock.txt) by CI and the release build, so a
+# build made weeks later contains the same code. yt-dlp and yt-dlp-ejs are left
+# out on purpose: releases ship the newest site support available.
+# Refresh after testing an upgrade: pip freeze, minus yt-dlp, build and test tools.
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.14.2
+av==18.1.0
+brotli==1.2.0
+certifi==2026.7.22
+cffi==2.1.1
+charset-normalizer==3.5.1
+click==8.4.2
+colorama==0.4.6
+ctranslate2==4.8.1
+curl_cffi==0.16.1
+fastapi==0.141.1
+faster-whisper==1.2.1
+filelock==3.32.4
+flatbuffers==25.12.19
+fsspec==2026.7.0
+h11==0.16.0
+hf-xet==1.6.0
+httpcore==1.0.9
+httptools==0.8.0
+httpx==0.28.1
+huggingface_hub==1.28.0
+idna==3.19
+mutagen==1.48.1
+numpy==2.5.2
+onnxruntime==1.29.0
+packaging==26.3
+protobuf==7.36.0
+pycparser==3.0
+pycryptodomex==3.23.0
+pydantic==2.13.4
+pydantic_core==2.46.4
+python-dotenv==1.2.3
+python-multipart==0.0.32
+PyYAML==6.0.3
+requests==2.34.2
+starlette==1.6.0
+tokenizers==0.23.1
+tqdm==4.70.0
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+urllib3==2.7.0
+uvicorn==0.52.4
+watchfiles==1.2.0
+websockets==17.0.1

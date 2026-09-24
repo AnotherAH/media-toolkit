@@ -1,0 +1,105 @@
+/* First-run wizard (W-01, W-02). The dialog shell, buttons, inputs and callouts
+   come from base.css; only the wizard's own layout lives here. */
+
+/* 560 px wide, 12vh from the top rather than centred, so the footer never
+   moves when a screen changes (W-01). */
+dialog.dlg.wizard {
+  width: min(560px, calc(100vw - 32px));
+  margin: 12vh auto auto;
+  max-height: calc(100dvh - 12vh - var(--s4));
+}
+/* The screens scroll inside the dialog when the window is short; the footer
+   with Continue always stays in view. */
+dialog.dlg.wizard[open] { display: flex; flex-direction: column; overflow: hidden; }
+.wizard .dlg-body { color: var(--fg); flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.wiz-form { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.wizard .dlg-foot { flex: none; }
+
+/* The body keeps the height of the plain first screen (--wiz-h, measured in
+   wizard.js), so the footer sits at the same place on both screens (W-01).
+   Screen 1 may grow past it when the extra rows open. The small padding keeps
+   the cards' focus rings inside the scroll area. */
+.wiz-screens {
+  flex: 0 1 auto; min-height: min(var(--wiz-h, 300px), calc(100dvh - 12vh - 180px));
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: 4px; margin: -4px; box-sizing: border-box;
+}
+.wiz-screen { min-width: 0; display: flex; flex-direction: column; }
+.wiz-screen[hidden] { display: none; }
+.wiz-screen.is-active { animation: wiz-in var(--dur) var(--ease); }
+@keyframes wiz-in { from { opacity: 0; } }
+@media (max-height: 640px) {
+  dialog.dlg.wizard { margin-top: var(--s4); max-height: calc(100dvh - var(--s6)); }
+}
+
+.wiz-step { font-size: var(--t-xs); color: var(--fg-3); margin-bottom: var(--s1); }
+.wizard .dlg-title { margin-bottom: var(--s1); }
+.wiz-pitch { font-size: var(--t-md); color: var(--fg-2); }
+
+/* Where should files go? */
+.wiz-choices { border: 0; margin: var(--s5) 0 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.wiz-q { padding: 0; margin: 0 0 var(--s2); font-size: var(--t-md); font-weight: 600; color: var(--fg); }
+
+/* Radio and checkbox cards (native inputs; arrow keys move between the radios). */
+.opt-card {
+  border: 1px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.opt-card:has(> .opt-main input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+.opt-card:has(> .opt-main input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* The whole card carries the focus ring, so the radio or checkbox itself shows none. */
+.opt-main input:focus, .opt-main input:focus-visible { outline: none; box-shadow: none; }
+.opt-main { display: flex; align-items: flex-start; gap: var(--s3); padding: var(--s3) var(--s4); cursor: pointer; }
+.opt-main > input { margin-top: 3px; }
+.opt-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.opt-title { font-size: var(--t-md); font-weight: 600; color: var(--fg); overflow-wrap: anywhere; }
+.opt-text { font-size: var(--t-sm); color: var(--fg-2); overflow-wrap: anywhere; }
+
+/* Indent the extras under the card text: padding + radio + gap. */
+.wiz-paths, .wiz-license { padding: 0 var(--s4) var(--s3) calc(var(--s4) + 16px + var(--s3)); }
+.wiz-paths { display: flex; flex-direction: column; gap: var(--s2); }
+.wiz-path { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: var(--s3); align-items: start; }
+.wiz-path > .label { padding-top: 10px; }
+.wiz-path .path-row > input { font-variant-numeric: tabular-nums; }
+
+.wiz-gpu { margin-top: var(--s3); }
+.wiz-gpu.is-entering { animation: wiz-slide var(--dur) var(--ease); }
+@keyframes wiz-slide { from { opacity: 0; transform: translateY(-4px); } }
+.wiz-license { margin: 0; }
+.wiz-license .link { font-weight: 400; }
+
+.wiz-privacy { display: flex; align-items: flex-start; gap: var(--s2); margin-top: var(--s4); font-size: var(--t-sm); color: var(--fg-3); }
+.wiz-privacy > .i { margin-top: 2px; }
+.wiz-error:not(:empty) { margin-top: var(--s3); }
+
+/* Screen 2: two full-width tiles, 64 px tall. */
+.wiz-tiles { display: flex; flex-direction: column; gap: var(--s3); margin-top: var(--s5); }
+.wiz-tile {
+  display: flex; align-items: center; gap: var(--s3); width: 100%; min-height: 64px;
+  padding: var(--s2) var(--s4); border: 1px solid var(--border-strong); border-radius: var(--r-md);
+  background: var(--surface-2); color: var(--fg); font: inherit; text-align: start; cursor: pointer;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.wiz-tile:hover { background: var(--surface-3); }
+.wiz-tile.is-primary { border-color: var(--accent); background: var(--accent-bg); }
+.wiz-tile.is-primary:hover { background: color-mix(in srgb, var(--accent) 20%, transparent); }
+.wiz-tile-icon {
+  display: grid; place-items: center; flex: none; width: 36px; height: 36px;
+  border-radius: var(--r-md); background: var(--surface); color: var(--fg-2);
+}
+.wiz-tile.is-primary .wiz-tile-icon { background: var(--accent); color: var(--on-accent); }
+.wiz-tile-body { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.wiz-tile-title { font-size: var(--t-md); font-weight: 600; color: var(--fg); }
+.wiz-tile-sub { font-size: var(--t-sm); color: var(--fg-2); }
+.wiz-tile-go { color: var(--fg-3); }
+.wiz-note { margin-top: var(--s4); }
+
+@media (max-width: 480px) {
+  .wiz-path { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
+  .wiz-path > .label { padding-top: 0; }
+  .wiz-paths, .wiz-license { padding-left: var(--s4); }
+}
+@media (forced-colors: active) {
+  .opt-card, .wiz-tile { border: 1px solid CanvasText; }
+  .wiz-tile.is-primary { outline: 2px solid Highlight; }
+}

@@ -1,0 +1,37 @@
+/* Queue tab styles (Q-01..Q-06, G-15). Owned by the queue stage.
+   Job cards, rows, pills, file rows and error blocks come from base.css; this file only lays out the page. */
+
+/* Persian and Arabic titles keep their own direction (dir=auto) but start beside the
+   thumbnail like every other title, so a row never reads as title-glued-to-status. */
+#qList .j-title { text-align: left; }
+
+.q-toolbar { margin: calc(-1 * var(--s1)) 0 var(--s4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
+.q-none { font-size: var(--t-sm); color: var(--fg-2); padding: var(--s2) 0 var(--s4); }
+
+.q-groups { display: flex; flex-direction: column; gap: var(--s5); }
+.q-group-head { font-size: var(--t-sm); font-weight: 600; line-height: 1.4; color: var(--fg-2); margin: 0 0 var(--s2); }
+
+/* One-line rows (Q-05): a single surface with dividers, 48 px per row. */
+.q-rows {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 0 var(--s2) 0 var(--s4);
+}
+.q-rows .job.q-row {
+  grid-template-columns: 64px minmax(0, 1fr) auto auto; gap: var(--s3);
+  min-height: 48px; padding: 6px 0;
+}
+.q-rows .job.q-row .j-title { font-weight: 600; }
+.q-rows .job.q-row .j-actions { flex-wrap: nowrap; }
+.q-rows .job.q-row > .q-more[aria-expanded="true"] { background: var(--surface-2); color: var(--fg); }
+.q-note { flex-basis: 100%; min-width: 0; }
+.q-details { grid-column: 2 / -1; padding: 0 var(--s2) var(--s2) 0; }
+.q-details:empty { display: none; }
+.q-details .callout.err { margin-top: 0; }
+
+/* Q-06: [Retry failed items] under 'Show which' */
+.q-retry-items { display: flex; flex-wrap: wrap; gap: var(--s2); }
+
+@media (max-width: 720px) {
+  .q-rows { padding: 0 var(--s1) 0 var(--s3); }
+  .q-details { grid-column: 1 / -1; }
+}

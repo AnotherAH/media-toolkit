@@ -1,0 +1,4 @@
+# Running the tests: python -m pytest
+pytest~=9.1
+# FastAPI's TestClient
+httpx>=0.27

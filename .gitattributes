@@ -1,0 +1,29 @@
+# Normalise line endings in the repository; check out with the platform's.
+* text=auto
+
+# Windows tools read these, and cmd.exe misparses labels and blocks in a
+# batch file with LF endings. Inno Setup scripts are kept CRLF to match.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.iss text eol=crlf
+# Shown as the installer's license page.
+installer/*.txt text eol=crlf
+
+# Scripts that run on the CI's Linux-style shells stay LF everywhere.
+*.sh  text eol=lf
+*.yml text eol=lf
+
+# Binary files: never diff, never touch line endings.
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.exe binary
+*.dll binary
+*.zip binary
+*.whl binary

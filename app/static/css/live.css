@@ -1,0 +1,38 @@
+/* Live tab (L-01..L-09). Layout only: every component comes from base.css. */
+
+/* ---- link card + live check (L-02) ---- */
+.lv-preview { margin-top: var(--s4); }
+.lv-pv .thumb { width: 96px; }
+.lv-pv .preview-body { gap: var(--s1); }
+.lv-pv .preview-title.is-url { color: var(--fg-2); font-weight: 400; }
+.lv-status {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2);
+  font-size: var(--t-sm); color: var(--fg-2); min-width: 0;
+}
+.lv-status > .i { color: var(--accent-text); }
+.lv-status > .btn { margin-left: var(--s1); }
+.lv-status.is-live { color: var(--rec); font-weight: 600; }
+.lv-status.is-live > .i { color: var(--rec); }
+.lv-pv .chips { margin-top: var(--s1); }
+.lv-line { display: flex; align-items: flex-start; gap: var(--s2); font-size: var(--t-sm); color: var(--fg-2); }
+.lv-line > .i { margin-top: 2px; color: var(--accent-text); }
+.lv-line.is-warn > .i { color: var(--warn); }
+.lv-line-title { font-weight: 600; color: var(--fg); }
+
+/* ---- Recordings (L-03) ---- */
+#lvRecordings .card-head { margin-bottom: var(--s3); }
+
+/* ---- Recording options (L-07) ---- */
+.lv-opts { display: flex; flex-direction: column; gap: var(--s4); }
+.lv-what { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.lv-pair { display: flex; flex-wrap: wrap; gap: var(--s4) var(--s5); }
+.lv-field { flex: 0 1 280px; min-width: 200px; }
+.lv-field > select { max-width: none; }
+.lv-limits, .lv-wait { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s6); }
+.lv-limits .inline-field, .lv-wait .inline-field { flex-wrap: wrap; }
+.lv-wait label.check { padding: 10px 0; }
+.lv-limits .field-error, .lv-wait .field-error { flex-basis: 100%; margin-top: 0; }
+
+@media (max-width: 720px) {
+  .lv-field { flex-basis: 100%; }
+}

@@ -1,0 +1,47 @@
+Media Toolkit license terms
+
+Media Toolkit is free software released under the MIT License. You may use,
+copy, change and share it. It comes with no warranty of any kind. The full
+license is in LICENSE.txt in the installation folder.
+
+Media Toolkit includes software from other projects, each under its own
+license. THIRD-PARTY-NOTICES.txt in the installation folder lists every
+component with its full license text. Most of it is open source. A few
+runtime libraries are not, and their owners require that you agree to these
+terms before using them:
+
+1. Intel runtime libraries: the Intel Math Kernel Library built into
+   ctranslate2.dll and the Intel OpenMP runtime libiomp5md.dll, which speech
+   recognition uses on the processor. You may not reverse engineer, decompile
+   or disassemble them, or change them. Intel provides them "as is", without
+   warranty, and is not liable for any damages that arise from their use.
+   Their full terms (the Intel Simplified Software License and the Intel End
+   User License Agreement for Developer Tools) are in THIRD-PARTY-NOTICES.txt.
+
+2. NVIDIA CUDA runtime, built into ctranslate2.dll by the CTranslate2
+   project so that speech recognition can use an NVIDIA graphics card. It is
+   NVIDIA's software, licensed under the NVIDIA CUDA Toolkit End User License
+   Agreement, not under the MIT License. You may not reverse engineer,
+   decompile or disassemble it, or remove its copyright notices. NVIDIA
+   provides it "as is", without warranty. The full agreement is in
+   THIRD-PARTY-NOTICES.txt.
+
+3. Microsoft Visual C++ runtime libraries (vcruntime140.dll, msvcp140.dll and
+   similar files). They may only be used on Microsoft Windows, and you may
+   not alter the copyright notices in them.
+
+FFmpeg (bin\ffmpeg.exe and bin\ffprobe.exe) is a separate program licensed
+under the GNU General Public License, version 3. You may copy and share it
+under that license. Where to get its source code is in
+THIRD-PARTY-NOTICES.txt.
+
+Downloaded later, only if you ask for it:
+
+* GPU support downloads NVIDIA's cuBLAS library from NVIDIA's official
+  package. NVIDIA licenses it to you under the NVIDIA Software License
+  Agreement, which the app shows before the download.
+* Speech models are downloaded from Hugging Face.
+
+Using the app to download from a site does not change that site's terms or
+the rights of whoever owns the content. Download only what you have the
+right to.

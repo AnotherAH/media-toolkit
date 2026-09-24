@@ -1,10 +1,20 @@
-yt-dlp[default]
-faster-whisper
-fastapi
-uvicorn[standard]
-python-multipart
+# Runtime dependencies (source checkout and the frozen build).
+#   python -m pip install -r requirements.txt
+#
+# yt-dlp floats upward on purpose: sites change every week, and the newest
+# yt-dlp is what keeps downloads working. Everything else uses compatible-
+# release pins (~=): bug-fix updates only, so a fresh setup gets what was
+# tested. requirements-lock.txt pins the exact set a release was built from.
+#
+# GPU transcription: the app downloads NVIDIA cuBLAS itself (Settings >
+# Transcription), in both the installed app and a source checkout. If you
+# prefer pip, install requirements-gpu.txt instead.
 
-# GPU acceleration (NVIDIA). Harmless to install without a GPU;
-# the app falls back to CPU automatically.
-nvidia-cublas-cu12
-nvidia-cudnn-cu12
+yt-dlp[default,curl-cffi]>=2026.8.19
+faster-whisper~=1.2.1
+# Whisper's engine. Pinned because the build's licence analysis depends on how
+# its Windows wheel is made (MKL/OpenMP from oneAPI 2025.3, cuDNN unused).
+ctranslate2~=4.8.1
+fastapi~=0.141.1
+uvicorn[standard]~=0.52.4
+python-multipart~=0.0.32

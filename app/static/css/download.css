@@ -1,0 +1,149 @@
+/* Download tab styles (D-01..D-12, S-11). Owned by the download stage.
+   Tokens and shared components come from base.css; only layout for this tab lives here. */
+
+/* A link inside prose reads as part of the sentence. */
+#tab-download .page-head .sub .link { font-weight: 400; }
+
+/* Persian and Arabic titles keep their own direction (dir=auto) but start beside the
+   thumbnail like every other title, instead of drifting to the far edge of the row. */
+.dl-pv .preview-title, .dl-row-title, .dl-choose-title, #dlRecent .j-title { text-align: left; }
+
+/* ------------------------------------------------------------ link card + preview slot */
+.dl-preview:not(:empty) { margin-top: var(--s4); }
+.dl-preview .skeleton-row { min-height: 32px; }
+.dl-pv .preview-body > .chips { margin-top: var(--s2); }
+.dl-pv.is-small { align-items: center; }
+.dl-pv-links { margin-top: var(--s2); margin-left: calc(-1 * var(--s3)); gap: var(--s1); }
+.dl-pv-links .btn[aria-expanded="true"] { color: var(--fg); background: var(--surface-2); }
+.dl-pv-links .btn .i:last-child:not(:first-child) { transition: transform var(--dur) var(--ease); }
+.dl-pv-links .btn[aria-expanded="true"] .i:last-child:not(:first-child) { transform: rotate(180deg); }
+
+.dl-clip { margin-top: var(--s2); display: flex; flex-direction: column; gap: var(--s1); }
+.dl-clip .inline-field input { font-variant-numeric: tabular-nums; }
+.dl-clip-chip .i:first-child { width: 12px; height: 12px; }
+
+.dl-inpl { margin-top: var(--s3); display: flex; flex-direction: column; align-items: flex-start; gap: var(--s2); }
+.dl-inpl-text { font-size: var(--t-sm); color: var(--fg-2); }
+
+/* playlist or channel (D-01) */
+.dl-pl { margin-top: var(--s3); display: flex; flex-direction: column; gap: var(--s3); min-width: 0; container-type: inline-size; }
+.dl-pl-scope { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.dl-pl-scope > .label { font-size: var(--t-sm); color: var(--fg-2); }
+.dl-chosen { margin-top: calc(-1 * var(--s1)); }
+.dl-chosen .link { font-size: inherit; }
+.dl-pl-checks { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.dl-filters > .more-body { display: flex; flex-direction: column; gap: var(--s2); }
+.dl-filter-grid { display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: var(--s3) var(--s6); align-items: center; }
+.dl-filter-grid .inline-field { flex-wrap: nowrap; font-size: var(--t-sm); }
+.dl-filter-grid .inline-field.dl-dates { flex-wrap: wrap; row-gap: var(--s2); }
+.dl-pair { display: inline-flex; align-items: center; gap: var(--s2); }
+/* The panel sits beside the thumbnail, so it follows its own width, not the window's. */
+@container (max-width: 700px) {
+  .dl-filter-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.dl-filter-grid .inline-field .label { font-size: var(--t-sm); }
+.dl-filter-grid input.input-short { width: 200px; }
+input.dl-date { width: 156px; font-variant-numeric: tabular-nums; }
+
+/* several links (D-09) */
+.dl-multi { display: flex; flex-direction: column; gap: var(--s1); }
+.dl-multi-head { font-size: var(--t-sm); font-weight: 600; color: var(--fg); }
+.dl-rows { margin-top: var(--s2); border-top: 1px solid var(--border); }
+.dl-row {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: var(--s3); align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+}
+.dl-row-body { min-width: 0; display: flex; flex-direction: column; }
+.dl-row-title { font-size: var(--t-sm); font-weight: 600; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-row-meta { font-size: var(--t-xs); color: var(--fg-3); display: flex; align-items: center; gap: var(--s1); min-width: 0; }
+.dl-row-meta .i { width: 12px; height: 12px; }
+.dl-row.is-loading .dl-row-title { color: var(--fg-2); font-weight: 400; }
+.dl-row.is-error .dl-row-title { color: var(--fg-2); font-weight: 400; }
+.dl-row.is-error .dl-row-meta { color: var(--err); font-weight: 600; }
+.dl-row.is-error .thumb { color: var(--err); }
+
+/* all formats (D-10) */
+.dl-formats-wrap:not([hidden]) { margin-top: var(--s4); }
+.dl-formats { border: 1px solid var(--border); border-radius: var(--r-md); background: var(--bg); }
+.dl-formats > .skeleton-row, .dl-formats > .help { padding: var(--s3) var(--s4); }
+.dl-formats.is-plain { border: 0; background: none; }
+.dl-fmt-intro { border-bottom: 1px solid var(--border); }
+.dl-fmt-list { margin: 0; padding: 0 var(--s2) var(--s2); border: 0; max-height: 360px; overflow: auto; min-width: 0; }
+.dl-fmt-group > .sub-heading {
+  position: sticky; top: 0; z-index: 1; margin: 0; padding: var(--s3) var(--s2) var(--s1); background: var(--bg);
+}
+.dl-fmt-row {
+  display: flex; align-items: center; gap: var(--s2); min-height: 32px; padding: 0 var(--s2);
+  border-radius: var(--r-sm); font-size: var(--t-sm); color: var(--fg-2); cursor: pointer;
+}
+.dl-fmt-row:hover { background: var(--surface-2); color: var(--fg); }
+.dl-fmt-row:has(input:checked) { background: var(--accent-bg); color: var(--fg); }
+.dl-fmt-row input { flex: none; }
+.dl-fmt-label { min-width: 0; }
+
+/* ------------------------------------------------------------ What you get (D-05) */
+.dl-mode-row { display: flex; align-items: center; gap: var(--s3) var(--s5); flex-wrap: wrap; min-height: var(--h-md); }
+.dl-format .label { font-size: var(--t-sm); }
+.dl-format select { width: 260px; max-width: 100%; }
+.dl-video-fields { margin-top: var(--s4); align-items: start; column-gap: var(--s5); }
+.dl-video-fields .field > select { max-width: 240px; }
+.dl-video-fields .field > .help { margin-top: 2px; }
+.dl-sublangs { margin-top: var(--s2); }
+.dl-exact { align-self: flex-start; height: var(--h-md); padding: 0 var(--s1) 0 var(--s3); font-size: var(--t-sm); color: var(--fg); background: var(--accent-bg); border-color: var(--border-strong); }
+.dl-exact .icon-btn { width: 28px; height: 28px; margin-right: 0; }
+.dl-exact .icon-btn .i { width: 14px; height: 14px; }
+/* Two columns, like Quality | Subtitles above, so 'Skip sponsor segments' lines up under Subtitles. */
+.dl-get-checks { margin-top: var(--s4); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s5); }
+
+/* More options drawer */
+#dlMore > .more-body > .sub-heading:first-child { margin-top: var(--s2); }
+.dl-drawer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3) var(--s5); margin-bottom: var(--s3); align-items: start; }
+.dl-drawer-grid .field > select.select-short, .dl-drawer-grid .field > input.input-short { max-width: 240px; }
+.dl-drawer-grid .field > select.select-md { width: auto; min-width: 240px; max-width: 100%; }
+.dl-check-with { display: flex; align-items: center; gap: var(--s1) var(--s4); flex-wrap: wrap; min-height: 22px; }
+.dl-check-with .inline-field { font-size: var(--t-sm); }
+.dl-check-with .inline-field select { height: var(--h-sm); width: auto; min-width: 112px; }
+.dl-check-with .inline-field input { height: var(--h-sm); }
+/* The drawer is two columns throughout, so checkboxes line up with the fields above them. */
+#dlMore .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s5); }
+.dl-extras { row-gap: var(--s3); align-items: center; }
+.dl-extras > .dl-thumb-row { grid-column: 1 / -1; }
+.dl-drawer-foot { display: flex; justify-content: flex-end; margin-top: var(--s4); }
+
+/* ------------------------------------------------------------ Recent downloads (D-08) */
+.dl-recent .card-head { margin-bottom: var(--s2); }
+.dl-recent .card-head .link { font-size: var(--t-sm); }
+.dl-notify { margin-bottom: var(--s3); }
+.dl-row-note { flex-basis: 100%; margin-top: 2px; }
+
+/* ------------------------------------------------------------ dialogs (S-11, D-12) */
+.dl-sites-dlg .dlg-body > input { margin-top: var(--s3); }
+.dl-sites { margin-top: var(--s3); min-height: 24px; }
+.dl-site-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s1); max-height: 280px; overflow: auto; }
+.dl-site { display: flex; align-items: center; gap: var(--s2); color: var(--fg); font-size: var(--t-md); }
+.dl-site .i { color: var(--ok); }
+.dl-site-none { color: var(--fg-2); font-size: var(--t-sm); }
+
+.dl-choose-dlg { width: min(640px, calc(100vw - 32px)); }
+.dl-choose-tools { display: flex; align-items: center; gap: var(--s1); margin: var(--s2) 0 var(--s2) calc(-1 * var(--s3)); flex-wrap: wrap; }
+.dl-choose-list {
+  display: flex; flex-direction: column; max-height: min(52vh, 440px); overflow: auto;
+  border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s1) 0;
+}
+.dl-choose-row { width: 100%; padding: 6px var(--s3); align-items: center; }
+.dl-choose-row:hover { background: var(--surface-2); }
+.dl-choose-row > input { margin-top: 0; }
+label.check .dl-choose-text { flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--s3); width: 100%; }
+.dl-choose-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg); }
+.dl-choose-text .help { flex: none; }
+
+/* ------------------------------------------------------------ narrow windows */
+@media (max-width: 720px) {
+  .dl-drawer-grid, .dl-filter-grid { grid-template-columns: minmax(0, 1fr); }
+  .dl-pl-checks, #dlMore .checks, .dl-get-checks { grid-template-columns: minmax(0, 1fr); }
+  .dl-video-fields .field > select, .dl-format select { max-width: 100%; }
+}
+@media (max-width: 560px) {
+  .dl-pv { flex-direction: column; }
+  .dl-pv .thumb.lg { width: 100%; max-width: 320px; }
+}

@@ -1,0 +1,40 @@
+name: Bug report
+description: Something in Media Toolkit does not work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. If a single site stopped working, first try **Settings › About › Site support**; most of those are fixed upstream in yt-dlp.
+  - type: input
+    id: version
+    attributes:
+      label: Media Toolkit version
+      description: Shown in Settings › About.
+      placeholder: "1.2.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options: [Download, Transcript, Live recording, Queue, Settings, Installer / startup, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the link if it is public. Please do not share links to private or paid content.
+  - type: textarea
+    id: details
+    attributes:
+      label: Technical details
+      description: Open the failed job's "Technical details" and paste them here, plus "Copy system details" from Settings › About.
+      render: text

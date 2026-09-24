@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Media Toolkit</title>
+  <!-- Same geometry as tools/make_icon.py: a blue download arrow over a tray,
+       on a rounded dark square with a thin lighter edge. -->
+  <rect x="1.5" y="1.5" width="253" height="253" rx="54.8" fill="#151a21" stroke="#262e39" stroke-width="3"/>
+  <rect x="102.4" y="51.2" width="51.2" height="76.8" fill="#4c8dff"/>
+  <polygon points="76.8,128 179.2,128 128,169" fill="#4c8dff"/>
+  <rect x="61.4" y="189.4" width="133.2" height="19.2" fill="#4c8dff"/>
+</svg>
